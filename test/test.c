@@ -19,7 +19,9 @@ int main(int argc, char **argv)
 		printf("1. Create a filesystem.\n");
 		printf("2. Mount a filesystem.\n");
 		printf("3. Unmount a filesystem.\n");
-		printf("4. Create a file/directory.\n");
+		printf("4. Add a file.\n");
+		printf("5. Delete a file.\n");
+		printf("6. Search a function.\n");		
 		printf("0. Exit the filesystem.\n");
 		printf("Enter your choice : ");
 
@@ -31,7 +33,7 @@ int main(int argc, char **argv)
 				scanf("%s",fs_name); // Add code to check if the filename is valid
 				printf("\nEnter the size of the filesystem : ");
 				scanf("%d",&fs_size);
-			        create_vfs(fs_name, fs_size);
+			        create_vfs(fs_name, 1024*100);
 			        printf("\n");
 			        break;
 			case 2:
@@ -50,20 +52,29 @@ int main(int argc, char **argv)
 	       			scanf("%s",file_path);
 				printf("\nEnter the name of the file/directory : ");
 				scanf("%s",file_name);    			
-		       		printf("\nIs this a file or directory ? Enter '0' for file and '1' for directory : ");
-				scanf("%d",&type);
-				switch(type)
-		       		{
-		       			case 0 :
+		       		//printf("\nIs this a file or directory ? Enter '0' for file and '1' for directory : ");
+				//scanf("%d",&type);
+				//switch(type)
+		       		//{
+		       		//	case 0 :
 		       				create_file(file_path,file_name,data);
-		       				break;
-		       			case 1 :
+		       		//		break;
+		       		//	case 1 :
 		       			//	create_dir();
-		       				break;
-		       			default:
-		       				printf("Enter a correct choice. Enter 'f' for file and 'd' for directory : ");
-		       				break;
-		       		}	
+		       		//		break;
+		       		//	default:
+		       		//		printf("Enter a correct choice. Enter 'f' for file and 'd' for directory : ");
+		       		//		break;
+		       		//}
+		       		break;
+		       	case 5:
+		       		printf("\nEnter the path to file to be deleted : ");
+		       		scanf("%s",file_path);
+		           	delete_file(file_path);
+		       		break;	
+		       	case 6:
+		       		printf("Enter the file path to check if it exists : ");
+		       		break;
 		       	default:
 		       		break;
 		}
