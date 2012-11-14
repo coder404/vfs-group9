@@ -4,33 +4,38 @@
 #include"../include/MainHeaderFile.h"
 #include"../include/BinarySearchTreeFile.h"
 
-int search_bst(struct bst *r, char n[1000]){
+struct bst * search_bst(struct bst *r, char *n){
 	
 	struct bst *node;
 	//printf("Search 1 BST Root : %s\n",BST_Root->data);
 	node = r;
 	//printf("Search 2 BST Root : %s\n",BST_Root->data);
-	printf("To be searched in bst : %s\n",n);
+	char *loc_bst; 
+	loc_bst = malloc(100);
+	strcpy(loc_bst,n);
+	memmove(loc_bst,loc_bst+1,strlen(loc_bst)); //to remove the '/' at the beginning
+//	memmove(n,n+1,strlen(n)); //to remove the '/' at the beginning
+//	printf("To be searched in bst : %s\n",loc_bst);
 	while(node!=NULL){
-	printf("Search bst : Not null\n");
-		printf("node data : %s\n",node->data);
-		if((strcmp(node->data,n))>0)
+	
+//		printf("node data : %s\n",node->data);
+		if((strcmp(node->data,loc_bst))>0)
 		{
-			printf("Check left_child\n");
+//			printf("Check left_child\n");
 			node = node->left_child;
 		}
-		else if((strcmp(node->data,n))<0)
+		else if((strcmp(node->data,loc_bst))<0)
 		{
-			printf("Check right_child\n");
+//			printf("Check right_child\n");
 			node = node->right_child;
 		}
-		else if((strcmp(node->data,n))==0)
+		else if((strcmp(node->data,loc_bst))==0)
 		{
-			printf("Found it!!\n");
-			return 1;
+//			printf("Found it!!\n");
+			return node;
 		}
 	}
-	return 0;
+	return NULL;
 }
 
 void inorder ( struct bst * tree ) {
@@ -45,7 +50,7 @@ void inorder ( struct bst * tree ) {
 struct bst* insert_in_bst(struct bst *head, char b[1000]){
 
 	
-	printf("Enter insert bst %s\n",b);
+//	printf("Enter insert bst %s\n",b);
 	struct bst *temp;
 	struct bst *r;
 	temp = (struct bst *)malloc(sizeof(struct bst));
@@ -58,42 +63,42 @@ struct bst* insert_in_bst(struct bst *head, char b[1000]){
 	r = head;
 				
 	if(NULL == r){
-	printf("Inserted root\n");
+//	printf("Inserted root\n");
 		r=temp;
 		return r;
 	}
 	else if(r!=NULL){
 		if((r->left_child==NULL)){
 		if((strcmp(r->data,temp->data))>0){
-		printf("%s  >>  %s\n",r->data,temp->data);
-		printf("Inserted left\n");
+//		printf("%s  >>  %s\n",r->data,temp->data);
+//		printf("Inserted left\n");
 		r->left_child=temp;
 		temp->parent = r;
 	}
 	}	
 	else if((r->left_child!=NULL)&&((strcmp(r->data,temp->data))>0))
 	{
-	printf("Insert in left\n");
-	printf("At %s left : %s\n",r->data,temp->data);
+//	printf("Insert in left\n");
+//	printf("At %s left : %s\n",r->data,temp->data);
 		insert_in_bst(r->left_child,temp->data);
 		}
 	if((r->right_child==NULL)&&((strcmp(r->data,temp->data))<0)){
 		r->right_child=temp;
-		printf("%s  <<  %s\n",r->data,temp->data);
-		printf("Inserted right\n");
+//		printf("%s  <<  %s\n",r->data,temp->data);
+//		printf("Inserted right\n");
 		temp->parent = r;
 	}
 	else if((r->right_child!=NULL)&&((strcmp(r->data,temp->data))<0))
 	{
-	printf("Insert in right\n");
-	printf("At %s right : %s\n",r->data,temp->data);
+//	printf("Insert in right\n");
+//	printf("At %s right : %s\n",r->data,temp->data);
 		insert_in_bst(r->right_child,temp->data);
 		}
 }
-printf("INsert funct : BST Root %s\n",BST_Root -> data);
+//printf("INsert funct : BST Root %s\n",BST_Root -> data);
 return head;
 }
-/*
+
 void transplant_bst(struct bst *r, struct bst *u, struct bst *v){
 	if((v->parent)==NULL)
 		r = v;
@@ -136,4 +141,4 @@ void delete_bst(struct bst *r, char a[1000]){
 	}	
 }
 
-*/
+
