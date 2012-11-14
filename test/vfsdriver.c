@@ -22,6 +22,8 @@
 #define BUFSIZE 200
 #define CMDSIZE 30
 #define PARSIZE 100
+FILE *fp;
+
 
 void createvfs ( char *P1, int P2 );
 void mountvfs ( char *P1 );
@@ -47,7 +49,8 @@ int main( int argc, char *argv[] )
 	char linebuffer[BUFSIZE];
 	char command[CMDSIZE], par1[PARSIZE], par2[PARSIZE], par3[PARSIZE];
 	char *token;
-
+//	fp = fopen("demo_interaction_output.txt","a");
+	//fclose(fp);
 	if( argc != 2 ){
 		fprintf(stderr,"Usage: vfsdriver <scriptfile>\n");
 		return(1);
@@ -57,7 +60,7 @@ int main( int argc, char *argv[] )
 		fprintf(stderr,"Unable to open script file: %s\n", argv[1]);
 		return(2);
 	}
-
+	
 	while( fgets(linebuffer, sizeof(linebuffer), scriptfp) != NULL ){
 		/* This output is for debugging... do not uncomment in final version */
 		/*
@@ -78,14 +81,16 @@ int main( int argc, char *argv[] )
 		/* printf("Command:%s:p1:%s:p2:%s:p3:%s\n",command, par1, par2, par3); */
 
 		processcommand( command, par1, par2, par3 );
-		
+			
 	}
+	
 	
 }
 
 void processcommand( char *command, char *P1, char *P2, char *P3 )
 {
 
+	
 	if( strcmp(command, "createvfs") == 0 ){
 		int size = atoi(P2);
 		createvfs (P1,size);
@@ -129,10 +134,13 @@ void createvfs ( char *P1, int P2 )
 	/* Call the appropriate function with given arguments and display appropriate output on the screen */
 	
 	//printf("createvfs_TO_BE_DONE\n");
+	
 	int status;
 	status = create_vfs(P1, P2);
-	if(status == 1)
+	if(status == 1){
 		printf("createvfs_SUCCESS\n");
+			
+		}
 	else
 		printf("createvfs_FAILURE VFS Creation failed!\n"); // Check what error code to be given
 	return;
@@ -169,17 +177,18 @@ void unmountvfs ( char *P1 )
 void makedir ( char *P1, char *P2 )
 {
 	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	//printf("makedir_TO_BE_DONE\n");
-	  			
-		       	//	printf("\nVFS ROOT DATA %s\n",VFS_Root->data);
-		       		char data[]="AAA";
-		       				create_file(P1,P2,data);
-	/*int status = 0;
-//	status = make_dir(P1, P2);
-	if(status)
-		printf("makedir_SUCCESS\n");
-	else
-		printf("makedir_FAILURE Creation of directory Failed\n");*/
+printf("calling mkdir .. n");
+	char *status;
+	//status = malloc(50*sizeof(char));
+	
+	//printf("P2 :%s\n",P2);
+	status = make_dir(P1,P2);
+	//fopen("demo_interaction_output.txt","a");
+	printf("STATUS : %s\n", status);
+	//while(strlen(status) > 0 )
+	//fputs(status,fp);
+	
+//	free(status);
 	return;
 	
 }
@@ -187,25 +196,54 @@ void makedir ( char *P1, char *P2 )
 void deletedir ( char *P1 )
 {
 	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("deletedir_TO_BE_DONE\n");
+	//printf("deletedir_TO_BE_DONE\n");
+	char *status1;
+	//status1 = malloc(50*sizeof(char));
+	
+	status1 = delete_dir(P1);
+	
+	printf("STATUS : %s\n", status1);
+	return;
 }
 
 void movedir ( char *P1, char *P2 )
 {
 	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("movedir_TO_BE_DONE\n");
+	//printf("movedir_TO_BE_DONE\n");
+	char * status;
+	//status = malloc(50*sizeof(char));
+	status = move_dir(P1,P2);
+	printf("STATUS : %s\n", status);
+	
 }
 
 void listdir ( char *P1, int P2, char *P3 )
 {
 	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("listdir_TO_BE_DONE\n");
+	//printf("listdir_TO_BE_DONE\n");
+	char *status;
+	status = malloc(50*sizeof(char));
+	
+	status = listdir_recursive(P1,P3);
+	printf("STATUS : %s\n",status);
+	
+	//free(status);
+	return;
+
+	
 }
 
 void addfile ( char *P1, char *P2, char *P3 )
 {
 	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("addfile_TO_BE_DONE\n");
+	//printf("addfile_TO_BE_DONE\n");
+	
+	
+	char *status;
+	
+	status = create_file(P1, P2, P3);
+	
+	printf("%s\n",status);
 }
 
 void listfile ( char *P1, char *P2 )
@@ -235,7 +273,16 @@ void movefile ( char *P1, char *P2 )
 void copyfile ( char *P1, char *P2 )
 {
 	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("copyfile_TO_BE_DONE\n");
+//	printf("copyfile_TO_BE_DONE\n");
+
+	char * status;
+	//status = malloc(50*sizeof(char));
+	status = copy_file(P1,P2);
+	printf("STATUS : %s\n", status);
+	
+
+
+
 }
 
 void exportfile ( char *P1, char *P2 )
