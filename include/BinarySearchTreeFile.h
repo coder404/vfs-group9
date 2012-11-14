@@ -12,7 +12,7 @@ struct bst{
 
 struct bst *BST_Root;
 
-int search_bst(struct bst *r, char n[1000]);
+struct bst * search_bst(struct bst *r, char n[1000]);
 struct bst* insert_in_bst(struct bst *r, char b[1000]);
 void transplant_bst(struct bst *r, struct bst *u, struct bst *v);
 struct bst *tree_min_bst(struct bst *z);
