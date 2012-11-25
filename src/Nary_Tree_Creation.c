@@ -35,7 +35,7 @@ node* insert_in_nary(node *head, char* x,file_desc *fd_id)
                         p=p->sibling;
                 newnode->parent = p->parent;
                 p->sibling=newnode;
-                p->no_children = p->no_children + 1;
+                p->parent->no_children++;
                 printf("Inserted sibling at %s\n",p->data);
                  printf( "Inserted  node here with data : %s \n",newnode->fd->name);
                 printf("Parent %s\n",newnode->parent->data);
@@ -159,10 +159,11 @@ printf("Memset start\n");
         token = strtok(str1,"/");
  printf("Memset end\n");
         i= 0;
-printf("%s\n",token);
+
 
         while(token!=NULL)
         {
+        printf("%s\n",token);
                 strcpy(filename[i],token);
                 token = strtok(NULL,"/");
   //              printf("filename[%d][20] : %s\n",i,filename[i]);
@@ -181,7 +182,7 @@ printf("%s\n",token);
 			   is the same as the child node then set the pointer to that (child) node */
    //     	printf("Inside while %s\n", p->data);     	
         	
-        	
+        	flag = 0;
         		if(p->child != NULL && strcmp(p->child->data,filename[i])==0 )
         		{
         			printf("Search : p->child->data : %s = filename[%d] : %s \n",p->child->data, i, filename[i]);
@@ -199,6 +200,7 @@ printf("%s\n",token);
        			if(p->child!=NULL)
        			{
        				p=p->child;
+       				
        				printf(" p -> data : %s filename[%d] : %s\n", p->data, i, filename[i]);
        				
        				if(strcmp(p->data,filename[i])!=0)
@@ -424,21 +426,53 @@ node * create_tree_in_nary(node *head, char *path, char *parent, file_desc *fd)
 void delete_node_from_nary(node *p)
 {
        
+       node * temp;
+       temp = p->parent->child;
+       
+       
+       if(strcmp(p->parent->child->data, p->data) == 0)
+       {
+       printf("Names same deleet\n"); 
+       		if(p->sibling == NULL)
+       			p->parent->child = NULL;
+       		else
+       			p->parent->child = p->sibling;
+       }
+       
+       else if(strcmp(p->parent->child->data, p->data) != 0)
+       {
+       		while(strcmp(temp->sibling->data, p->data) != 0 && temp->sibling != NULL)
+       		{
+       			temp = temp->sibling;
+       		
+       		}	
+       		if (p->sibling == NULL)
+       			temp->sibling = NULL;
+       		
+       		else
+       			temp->sibling =  p->sibling;
+       		
+       
+       }
+       //no sibling 
+       printf("delete nary nodes\n");
+       return;  
+       
          
-        	if(p->sibling != NULL){
+        /*	if(p->sibling != NULL){
         	
         //	printf("parent node of p %s : \n",p->parent->data);
         	
      			p->parent->child = p->sibling;
        }
-     		  else
-     		  
-     		  
+     		  else   		  
       		 {
-      	//	 printf("parent node of p %s : \n",p->parent->data);
-       		p->parent->child = NULL;
+      		 printf("DELETE NODE  p %s : \n",p->data);
+//       		p->parent->child = NULL;
+			p = NULL;
+
        		}
-       	
+       	*/
 //       	free(p);
         
 //        print_subtree_nary(VFS_Root);
@@ -453,42 +487,34 @@ void copy_tree_nary(node * head)
 {
 	node *p;
 	p = head;
-	if ( p != NULL )
+	
+	if ( p	 != NULL )
 	{
+		//printf("Copying into fd %d\n" , fd_no);
 		copy_into_fdarray(p->fd);
-		//printf("\t %s",p->fd->name);
+		
 		copy_tree_nary( p -> child );
 		//printf("\t %s",p->data);
 		
 		copy_tree_nary(p -> sibling );
 	}
+	return;
 
 }
 
 void copy_into_fdarray(file_desc *fd)
 {
-//	if(strcmp(fd->name,"/") == 0)
-//	{
-//		printf("Root node\n");
-//	}
-//	else 
-//	{
-
-	
+//printf("fd_no is %d\n",fd_no);
+printf("Copying into fd_arr[%d] is %s\n",fd_no ,fd->location);
 	fd_arr[fd_no] = *fd;
 	fd_no ++;
+//	printf("fd_no is %d\n",fd_no);
 	//fd_no = fd->fd_id;
-	printf("fd_no is %d\n",fd_no);
+	return;
+	
 	//strcpy(fd_arr[fd->fd_id].name,fd->name);
 	//strcpy(fd_arr[fd->fd_id].location,fd->location);
 	
-	
-	
-	
-//	}
-	//return;
-
-
 }
 void search_nary_node(node * head, char *f_name)
 {
@@ -518,15 +544,13 @@ void compare_node_names(node *p , char *f_name)
 
 }
 
-char * print_arr(node *p, char *outputfile)
+char * print_arr(node *p, FILE *fp_dir)
 {
 
-	FILE *fp;
+//	FILE *fp;
 	
-	fp = fopen(outputfile,"a");
-	
-	if(fp == NULL)
-		return ERR_VFS_LISTDIR_03;
+//	fp = fopen(outputfile,"a");
+
 	
 	if(p->child != NULL)
 	{
@@ -535,100 +559,146 @@ char * print_arr(node *p, char *outputfile)
 		while(p != NULL)
 		{
 			//printf("%s ---- \n", p->data);
-			fputs(p->data,fp);
-			fputs("\n",fp);
+			fputs(p->data,fp_dir);
+			fputs("\n",fp_dir);
 			p=p->sibling;
 		}
 	
 	}	
-	fclose(fp);
+	
 }
 
-void print_subtree_nary(node * head)
+void print_subtree_nary(node * head, FILE *fp_dir)
 {
 	node *p;
 	p = head;
 	if ( p != NULL )
 	{
 		//copy_into_fdarray(p->fd);
-		printf("\t\t%s",p->fd->name);
+		fputs(p->data,fp_dir);
+		fputs("\n",fp_dir);
 		
-		print_subtree_nary( p -> child );
+		print_subtree_nary( p -> child , fp_dir);
 		//printf("\t %s",p->data);
 		
-		print_subtree_nary(p -> sibling );
+		print_subtree_nary(p -> sibling , fp_dir);
 	}
 
 }
 
+void print_subtree_nary_test(node * head)
+{
+	node *p;
+	p = head;
+	if ( p != NULL )
+	{
+		//copy_into_fdarray(p->fd);
+		printf("\t\t%s",p->fd->location);
+		
+		print_subtree_nary_test( p -> child );
+		//printf("\t %s",p->data);
+		
+		print_subtree_nary_test(p -> sibling);
+	}
+
+}
+
+change_fd(node *p){
+
+	
+	strcpy(p->fd->location, p->parent->fd->location);
+	strcat(p->fd->location, p->data);
+	strcat(p->fd->location,"/");
+	printf("Location\t %s\n",p->fd->location);
+}
+
+node * change_fds_movedir(node *temp)
+{
+	node *p;
+	p = temp;
+	if ( p != NULL)
+	{
+		//copy_into_fdarray(p->fd);
+		//printf("\t\t%s",p->fd->location);
+		//if(p != temp)
+		change_fd(p);
+		
+		change_fds_movedir( p -> child );
+		//printf("\t %s",p->data);
+		
+		change_fds_movedir(p -> sibling);
+	}
+
+}
+
+
 char * move_nodes_dir(node * src,node * dest)
 {
-	node * temp1;
+
+
+	node *temp1;
 	node *temp2;
-	printf("Enter move\n");
-		
+	
 	temp1 = src;
 	temp2 = dest;
-	printf("temp1 : %s \t ", temp1->data);
-	printf("temp2 : %s \n ", temp2->data);
 	
+//	print_subtree_nary_test(temp1);
 	
-	//Change the location of the fd
-	//change size of fd
-	char *loc;
-	loc = malloc(100);
+	//Number_of_fds_Deleted++;
+//	print_subtree_nary_test(VFS_Root);
+//	printf("\nPrint print\n");
+//	print_subtree_nary_test(temp1);
+
+	char *str;
+	str = malloc(100);
+	strcpy(str, temp2->fd->location);
+	strcat(str, temp1->data);
+	strcat(str,"/");
+	node *chk_path;
+	printf("STR : %s\n", str);
+	chk_path = search_nary(VFS_Root,str);
+	printf("check path : %s\n", chk_path->data);
+	if(strcmp(chk_path->data,temp1->data)==0)
+		return ERR_VFS_MOVEDIR_05;
+
+	strcpy(temp1->fd->location , str);
 	
-	strcpy(loc, temp2->fd->location);
-	strcat(loc,"/");
-	strcat(loc, temp1->data);
-	strcpy(temp1->fd->location, loc);
+	if(dest->parent == src)
+		return ERR_VFS_MOVEDIR_06;
+				
+				
+	delete_node_from_nary(src);
+	temp1->parent = dest;
+	change_fds_movedir(temp1);
 	
-	if(temp1->sibling != NULL)
+	print_subtree_nary_test(temp1);
+	int flag = 0;
+	if(dest->child == NULL)
 	{
-		temp1->parent->child = temp1->sibling;
+		printf("ndest child is NULL\n");
 		
+		dest->child = temp1;
+	
 	}
-	else
-		temp1->parent->child = NULL;
-		
 	
-	if(temp2 -> child != NULL)
+	else if(dest->child != NULL)
 	{
-		printf("temp2 -> child : %s\n",temp2->child->data);
 		temp2 = temp2->child;
-		
-		if(strcmp(temp2->data,temp1->data)!=0)
-		{		
-		while(temp2->sibling != NULL)
-		{
-			printf(" temp2 %s \n", temp2->data);
-			printf(" temp1 %s\n",temp1->data);
-			if(strcmp(temp2->data,temp1->data)==0)
-				return ERR_VFS_MOVEDIR_05;
+		while(temp2->sibling != NULL){
+		printf("temp2->data : %s temp1->data : %s \n",temp2->data, temp1->data);
+	
 			temp2 = temp2->sibling;
-			
 		}
 		
-				
+		if(flag!=1){
 		temp2->sibling = temp1;
 		
-			temp1->parent = temp2;
-		return SUC_VFS_MOVEDIR_01;
 		}
-		else		
-		 return ERR_VFS_MOVEDIR_05;
-			
-	}		
-	else
-	{
-	
-		temp2->child = temp1;
-		printf("temp2 -> child : %s\n",temp2->child->data);
-			temp1->parent = temp2;
-		return SUC_VFS_MOVEDIR_01;
 		
-	
 	}
+	
+	
+	return SUC_VFS_MOVEDIR_01;
 
 
 }
