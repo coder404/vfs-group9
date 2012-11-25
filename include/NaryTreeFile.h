@@ -15,7 +15,10 @@ typedef struct node
 node* VFS_Root;
 int fd_no;
 
-
+#define FILE_ATTRIBUTE 0
+#define DIR_ATTRIBUTE 1
+#define INVALID_CHARACTER "/"
+#define PRINT_VFS() printf("VFS ROOT DATA %s %p\n",VFS_Root->data, &(VFS_Root->data))
 file_desc * add_fd(node *parent, char *dir_name , int fd_att, int start);
 //node* insert_in_nary(node *head, char* x);
 //node* insert_in_nary(node *head, char *path,int fd);
@@ -36,7 +39,11 @@ node* search_nary(node * head,char *path);
 void traversal_nary(node * head,int i);
 void copy_into_fdarray(file_desc *fd);
 void compare_node_names(node *p , char *f_name);
-char * print_arr(node *p, char *outputfile);
-void print_subtree_nary(node * head);
+char * print_arr(node *p, FILE *fp_dir);
+void print_subtree_nary(node * head , FILE *fp_dir);
 char * move_nodes_dir(node * src,node * dest);
+void print_subtree_nary_test(node * head);
+char* list_file(char *f_path,char *hd_path);
+char* remove_file(char *f_path);
+char* update_file(char* f_path, char* hd_path);
 #endif
