@@ -7,19 +7,26 @@
 struct bst * search_bst(struct bst *r, char *n){
 	
 	struct bst *node;
-	//printf("Search 1 BST Root : %s\n",BST_Root->data);
+//	printf("Search 1 BST Root : %s\n",BST_Root->data);
 	node = r;
-	//printf("Search 2 BST Root : %s\n",BST_Root->data);
+//	printf("Search 2 BST Root : %s\n",BST_Root->data);
 	char *loc_bst; 
 	loc_bst = malloc(100);
 	strcpy(loc_bst,n);
 	memmove(loc_bst,loc_bst+1,strlen(loc_bst)); //to remove the '/' at the beginning
 //	memmove(n,n+1,strlen(n)); //to remove the '/' at the beginning
+
+/*		if(n[strlen(n) - 1] == '/')
+//	if(strcmp(parent_path,VFS_Root->data) != 0)
+	{
+		n[strlen(n) - 1] = '\0';
+	}
+	*/
 //	printf("To be searched in bst : %s\n",loc_bst);
 	while(node!=NULL){
 	
 //		printf("node data : %s\n",node->data);
-		if((strcmp(node->data,loc_bst))>0)
+		if((strcmp(node->data,loc_bst))>0 )
 		{
 //			printf("Check left_child\n");
 			node = node->left_child;
@@ -28,6 +35,7 @@ struct bst * search_bst(struct bst *r, char *n){
 		{
 //			printf("Check right_child\n");
 			node = node->right_child;
+//			printf("Check right_child\n");
 		}
 		else if((strcmp(node->data,loc_bst))==0)
 		{
@@ -35,6 +43,8 @@ struct bst * search_bst(struct bst *r, char *n){
 			return node;
 		}
 	}
+//	if(NULL == node)
+//		printf("NULL NULL NULL \n");
 	return NULL;
 }
 
@@ -59,12 +69,15 @@ struct bst* insert_in_bst(struct bst *head, char b[1000]){
 	temp->parent=NULL;
 	strcpy(temp->data,b);
 	
+//	printf("Insert data : %s\n", temp->data);
 	//strcpy(temp->fd->path,b);
 	r = head;
 				
 	if(NULL == r){
 //	printf("Inserted root\n");
 		r=temp;
+//		printf("Insert data : %s\n", r->data);
+		
 		return r;
 	}
 	else if(r!=NULL){
