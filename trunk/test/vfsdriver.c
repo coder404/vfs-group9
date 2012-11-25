@@ -135,28 +135,14 @@ void createvfs ( char *P1, int P2 )
 	
 	//printf("createvfs_TO_BE_DONE\n");
 	
-	int status;
-	status = create_vfs(P1, P2);
-	if(status == 1){
-		printf("createvfs_SUCCESS\n");
-			
-		}
-	else
-		printf("createvfs_FAILURE VFS Creation failed!\n"); // Check what error code to be given
-	return;
+	printf("%s\n",create_vfs(P1, P2));
 }
 
 void mountvfs ( char *P1 )
 {
 	/* Call the appropriate function with given arguments and display appropriate output on the screen */
 //	printf("mountvfs_TO_BE_DONE\n");
-	int status = 0;
-	status = mount(P1);
-	if(status)
-		printf("mountvfs_SUCCESS\n");
-	else
-		printf("mountvfs_FAILURE Mounting of VFS Failed\n");
-	return;	
+	printf("%s\n",mount(P1));
 	
 }
 
@@ -200,10 +186,11 @@ void deletedir ( char *P1 )
 	char *status1;
 	//status1 = malloc(50*sizeof(char));
 	
+
 	status1 = delete_dir(P1);
 	
 	printf("STATUS : %s\n", status1);
-	return;
+	//return;
 }
 
 void movedir ( char *P1, char *P2 )
@@ -211,7 +198,7 @@ void movedir ( char *P1, char *P2 )
 	/* Call the appropriate function with given arguments and display appropriate output on the screen */
 	//printf("movedir_TO_BE_DONE\n");
 	char * status;
-	//status = malloc(50*sizeof(char));
+	status = malloc(50*sizeof(char));
 	status = move_dir(P1,P2);
 	printf("STATUS : %s\n", status);
 	
@@ -221,14 +208,15 @@ void listdir ( char *P1, int P2, char *P3 )
 {
 	/* Call the appropriate function with given arguments and display appropriate output on the screen */
 	//printf("listdir_TO_BE_DONE\n");
+	printf("%s  %d  %s\n" , P1 , P2 , P3);
 	char *status;
 	status = malloc(50*sizeof(char));
 	
-	status = listdir_recursive(P1,P3);
+	status = list_dir(P1,P2,P3);
 	printf("STATUS : %s\n",status);
 	
 	//free(status);
-	return;
+	//return;
 
 	
 }
