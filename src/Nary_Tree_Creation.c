@@ -243,7 +243,7 @@ printf("Memset start\n");
     }
 
 
-node * create_tree_in_nary(node *head, char *path, char *parent, file_desc *fd)
+node * create_tree_in_nary(node *head, char *path,int fd_attr)
 {
 
         char *str1 , *token;
@@ -330,7 +330,7 @@ node * create_tree_in_nary(node *head, char *path, char *parent, file_desc *fd)
                       }*/
                        // fd_node = add_fd(str2, filename[i],1);
                        
-                        fd_node = add_fd(p, filename[i],1,-1);
+                        fd_node = add_fd(p, filename[i],fd_attr,-1);
                         
                           printf("PARENT TO FD %s \n",fd_node->location);
                         
@@ -388,7 +388,7 @@ node * create_tree_in_nary(node *head, char *path, char *parent, file_desc *fd)
                                  
                                 file_desc * fd_node;
                        // printf("STR2 IS **  %s \n",str2);
-                      fd_node = add_fd(p->parent, filename[i],1,-1);
+                      fd_node = add_fd(p->parent, filename[i],fd_attr,-1);
                          printf("PARENT TO FD %s \n",fd_node->location);
                         p= insert_in_nary(p,filename[i],fd_node);
               /*          if(strcmp(p->data,VFS_Root->data)!=0)
@@ -432,11 +432,13 @@ void delete_node_from_nary(node *p)
        
        if(strcmp(p->parent->child->data, p->data) == 0)
        {
-       printf("Names same deleet\n"); 
+       printf("Names same delete\n"); 
        		if(p->sibling == NULL)
        			p->parent->child = NULL;
-       		else
+       		else{
        			p->parent->child = p->sibling;
+       			//p->sibling = NULL;
+       		}
        }
        
        else if(strcmp(p->parent->child->data, p->data) != 0)
@@ -449,14 +451,16 @@ void delete_node_from_nary(node *p)
        		if (p->sibling == NULL)
        			temp->sibling = NULL;
        		
-       		else
+       		else{
        			temp->sibling =  p->sibling;
+       			//p->sibling = NULL;
+       		}
        		
        
        }
        //no sibling 
        printf("delete nary nodes\n");
-       return;  
+//       return;  
        
          
         /*	if(p->sibling != NULL){
@@ -505,7 +509,7 @@ void copy_tree_nary(node * head)
 void copy_into_fdarray(file_desc *fd)
 {
 //printf("fd_no is %d\n",fd_no);
-printf("Copying into fd_arr[%d] is %s\n",fd_no ,fd->location);
+printf("Copying into fd_arr[%d] is %d\n",fd_no ,fd->attrib);
 	fd_arr[fd_no] = *fd;
 	fd_no ++;
 //	printf("fd_no is %d\n",fd_no);
@@ -603,7 +607,7 @@ void print_subtree_nary_test(node * head)
 
 }
 
-change_fd(node *p){
+void change_fd(node *p){
 
 	
 	strcpy(p->fd->location, p->parent->fd->location);
@@ -661,23 +665,34 @@ char * move_nodes_dir(node * src,node * dest)
 	if(strcmp(chk_path->data,temp1->data)==0)
 		return ERR_VFS_MOVEDIR_05;
 
+	printf("Before changing fds\n");
+	
+	print_subtree_nary_test(temp1);
 	strcpy(temp1->fd->location , str);
 	
 	if(dest->parent == src)
 		return ERR_VFS_MOVEDIR_06;
 				
-				
+		
 	delete_node_from_nary(src);
 	temp1->parent = dest;
-	change_fds_movedir(temp1);
-	
+	temp1->sibling = NULL;	
+	printf("After deleting\n");
 	print_subtree_nary_test(temp1);
+	printf("\nPrinting entire tree...\n");
+	print_subtree_nary_test(VFS_Root);	
+	printf("\n");
+	change_fds_movedir(temp1);
+	printf("\nAfter changing fds\n");
+	print_subtree_nary_test(temp1);
+//	print_subtree_nary_test(temp1);
 	int flag = 0;
+	printf("\n");
 	if(dest->child == NULL)
 	{
 		printf("ndest child is NULL\n");
 		
-		dest->child = temp1;
+		dest->child = temp1;	
 	
 	}
 	
@@ -692,10 +707,10 @@ char * move_nodes_dir(node * src,node * dest)
 		
 		if(flag!=1){
 		temp2->sibling = temp1;
-		
+			
 		}
 		
-	}
+	}	
 	
 	
 	return SUC_VFS_MOVEDIR_01;
