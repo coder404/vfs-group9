@@ -196,7 +196,6 @@ char * delete_dir(char *dir_path)
 		return outputmsg;
  	}
  	if(dir_path[strlen(dir_path) - 1] != '/')
-//	if(strcmp(parent_path,VFS_Root->data) != 0)
 	{
 	strcat(dir_path,"/");
 	}
@@ -208,10 +207,6 @@ char * delete_dir(char *dir_path)
 		return outputmsg;
 	}
 	
-	
-	//r = (struct bst *)malloc(10*sizeof(struct bst));
-	
-//	printf("BST ROOT : %s\n",BST_Root->data);
 	r = search_bst(BST_Root, dir_path);
 	
 	if(NULL == r)
@@ -222,27 +217,13 @@ char * delete_dir(char *dir_path)
 	
 	temp = search_nary(VFS_Root,dir_path);
 
-/*	if (strcmp(temp->data , VFS_Root->data )==0)
-        {
-            //    printf("No such file or directory\n");
-                return ERR_VFS_DELETEDIR_01;
-        }*/
-        
-        
-     //   if(NULL == temp)
-       // 	 return ERR_VFS_DELETEDIR_01;
-	
-	
-	// printf("search done \n");
- //check if dir has a child - If yes return ERR_VFS_DELETEDIR_02
+ 	//check if dir has a child - If yes return ERR_VFS_DELETEDIR_02
  	if(temp->child != NULL)
  	{
  		sprintf(outputmsg,"%s %s","deletedir_FAILURE",ERR_VFS_DELETEDIR_02);
 		return outputmsg;
  	}
- 	
-// 	printf ("%s\n ----- \n",temp->data);
- //	printf("\nMAKE DIR : decrement used fd \n");
+
   	Number_of_fds_Deleted++;
 
  	delete_node_from_nary(temp);
@@ -329,7 +310,11 @@ char * move_dir(char * src_dir_path , char * dest_dir_path)
 		sprintf(outputmsg,"%s %s","movedir_FAILURE",ERR_VFS_MOVEDIR_07);
 		return outputmsg;
 	}
-	
+	if(temp2->parent == temp1)
+	{
+		sprintf(outputmsg,"%s %s","movedir_FAILURE",ERR_VFS_MOVEDIR_06);
+		return outputmsg;
+	}				
 	char *str;
 	str = malloc(100);
 	strcpy(str, temp2->fd->location);
