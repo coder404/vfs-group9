@@ -4,9 +4,10 @@
 #include<math.h>
 #include"../include/MainHeaderFile.h"
 #include"../include/NaryTreeFile.h"
+#include"../include/HashTableFile.h"
 #include"../include/BinarySearchTreeFile.h"
 #include"../include/vfs_errorcodes.h"
-#include"../include/vfs_successcodes.h"
+
 
 char * copy_file(char *src_path, char *dest_path)
 {
@@ -20,19 +21,39 @@ char * copy_file(char *src_path, char *dest_path)
 	struct bst * temp1;
 	struct bst * temp2;
 	
+	if(mountstate != 1)
+	{
+		sprintf(outputmsg,"%s %s","copyfile_FAILURE",ERR_VFS_COPYFILE_05);
+		return outputmsg;
+	}
+	
+	
+
+	if(strlen(src_path)== 0 || strlen(dest_path) == 0)
+	{
+		sprintf(outputmsg,"%s %s","copyfile_FAILURE",ERR_VFS_COPYFILE_00);
+		return outputmsg;
+	}
+	
+	
 	temp1 = search_bst(BST_Root,src_path);
 	
 	if(temp1 == NULL)
-		return ERR_VFS_COPYFILE_01;
+	{
+		sprintf(outputmsg,"%s %s","copyfile_FAILURE",ERR_VFS_COPYFILE_01);
+		return outputmsg;
+	}
+
 	temp2 = search_bst(BST_Root,dest_path);	
 	if(temp2 == NULL)
-		return ERR_VFS_COPYFILE_02;	
+	{
+		sprintf(outputmsg,"%s %s","copyfile_FAILURE",ERR_VFS_COPYFILE_02);
+		return outputmsg;
+	}
 	
 	
-	printf("Src path : %s\n",src_path);	
 	src = search_nary(VFS_Root,src_path);
-	printf("SRC NODE : %s\n" , src->data);
-	/* IF src is null return error */
+	
 		
 	dest = search_nary(VFS_Root,dest_path);
 	
@@ -41,32 +62,30 @@ char * copy_file(char *src_path, char *dest_path)
 	
 	if(src -> fd->attrib == DIR_ATTRIBUTE)
 	{
-		printf("Cannot copy dir to file \n");
 		
-		return ERR_VFS_COPYFILE_05;
-		
+		sprintf(outputmsg,"%s %s","copyfile_FAILURE",ERR_VFS_COPYFILE_03);
+		return outputmsg;
 	}
+
 	src_start = src->fd->start_block;
 	
 	
-	printf("Source start block is : %d\n", src_start);
 	
 	dest_start = dest->fd->start_block;
 	
-	printf("Dest start block is : %d\n", dest_start);
+	
 	
 	src_offset = OFFSET + (src_start * BLOCK_SIZE);
 	
-	printf("Source offset is : %d\n", src_offset);
+	
 	
 	dest_offset = OFFSET + (dest_start * BLOCK_SIZE);
-	printf("dest offset is : %d\n", dest_offset);
 	
 	fseek(fs, src_offset , SEEK_SET);
 	
 	fread(buffer, BLOCK_SIZE, 1 ,fs);
 	
-	printf("\n The bytes read are [%s]\n",buffer);
+	
 	
 	fseek(fs, dest_offset, SEEK_SET);
 	
@@ -76,30 +95,36 @@ char * copy_file(char *src_path, char *dest_path)
 	
 	fread(buffer, BLOCK_SIZE, 1 ,fs);
 	
-	printf("\n The bytes read are [%s]\n",buffer);
+	
 	
 	/* Update the FDs */
 	
 	dest->fd->size = src->fd->size;
-	
-	return SUC_VFS_COPYFILE_01;
+
+	sprintf(outputmsg,"%s","copyfile_SUCCESS");
+	return outputmsg;
 }
 
 char *create_file(char *f_path, char *f_name, char *data_file)
 {
 
-	printf("in create");
+	
 	FILE *fp;
 	node *temp;
 	int size;
 	struct bst *temp_bst;
 	char *local_fpath;
+	
+	if(mountstate != 1)
+	{
+		sprintf(outputmsg,"%s %s","addfile_FAILURE",ERR_VFS_ADDFILE_07);
+		return outputmsg;
+	}
+	
 	local_fpath = malloc(100);
 	strcpy(local_fpath,f_path);
-	printf("LOCAL PATH %s\n\n",local_fpath);
-	//printf("f_path[strlen(f_path)-1 : %s\n", f_path[strlen(f_path)-1]);
+	
 	if(f_path[strlen(f_path) - 1] != '/')
-//	if(strcmp(parent_path,VFS_Root->data) != 0)
 	{
 	
 	strcat(local_fpath,"/");
@@ -109,16 +134,42 @@ char *create_file(char *f_path, char *f_name, char *data_file)
 	else
 		strcat(local_fpath,f_name);
 
-//	strcpy(local_fpath,f_path);
 
-	//if(f_path[strlen(f_path)] != "/")
-	//strcat(local_fpath,"/");
-//	strcat(local_fpath,f_name);
 	
-	printf("LOCAL PATH %s\n\n",local_fpath);
 	temp_bst = search_bst(BST_Root,local_fpath);
 	
+	if(strlen(f_path) == 0)
+	{
+		sprintf(outputmsg,"%s %s","addfile_FAILURE",ERR_VFS_ADDFILE_00);
+		return outputmsg;
+	}
+
+	if(strlen(f_name) == 0)
+	{
+		sprintf(outputmsg,"%s %s","addfile_FAILURE",ERR_VFS_ADDFILE_00);
+		return outputmsg;
+	}
+
+	if(strlen(data_file) == 0)
+	{
+		sprintf(outputmsg,"%s %s","addfile_FAILURE",ERR_VFS_ADDFILE_00);
+		return outputmsg;
+	}
+
+	if(temp_bst != NULL)
+	{
+		sprintf(outputmsg,"%s %s","addfile_FAILURE",ERR_VFS_ADDFILE_03);
+		return outputmsg;
+	}
+
 	
+	if(strpbrk(f_name,INVALID_CHARACTER) != NULL)
+	{
+		sprintf(outputmsg,"%s %s","addfile_FAILURE",ERR_VFS_ADDFILE_02);
+		return outputmsg;
+	}
+
+
        fp = fopen(data_file,"rb");
 	
       	fseek(fp,0,SEEK_END);
@@ -126,29 +177,20 @@ char *create_file(char *f_path, char *f_name, char *data_file)
 	fclose(fp);
 
 	if(size>=1024)
-      	return ERR_VFS_ADDFILE_06;
+	{
+		sprintf(outputmsg,"%s %s","addfile_FAILURE",ERR_VFS_ADDFILE_06);
+		return outputmsg;
+	}
 
-	if(strlen(f_path) == 0)
-		return ERR_VFS_ADDFILE_00;
-	else if(strlen(f_name) == 0)
-		return ERR_VFS_ADDFILE_00;
-	else if(strlen(data_file) == 0)
-		return ERR_VFS_ADDFILE_00;
 
-	else if(temp_bst != NULL)
-		return ERR_VFS_ADDFILE_03; 	  
-
-	//else if((meta_data.used_fd) == (meta_data.max_fd))
-	//	return ERR_VFS_ADDFILE_04;
-
-	else if(strpbrk(f_name,INVALID_CHARACTER) != NULL)
-		return  ERR_VFS_ADDFILE_02;
-
-//cannot write to file????
 	else {
+	
+	
+	inorder(BST_Root);
+	
 	 fs = fopen(meta_data.fs_name, "rb+");
         
-        // Add to check if node exists
+      
         
         FILE *fp,*fp1;
 	fp = fopen(data_file,"rb");
@@ -163,25 +205,23 @@ char *create_file(char *f_path, char *f_name, char *data_file)
    	int num_blocks = ceil((double)size/BLOCK_SIZE);
 		      
         start = check_free_list(num_blocks);
-             printf("start : %d\n", start);
+            
         if((Number_of_fds_Created - Number_of_fds_Deleted) == meta_data.max_fd)
 		return ERR_VFS_ADDFILE_04;
 
      if(1 != fread(buffer,size,1,fp))
     	{
-        	//printf("\n fread() failed\n");
-        //	return ERR_VFS_ADDFILE_01;
-       
+        	
     	}   
-      // fread(buffer, 1 ,10,fp);
+    
          fseek(fs,0,SEEK_SET);
         
-     //   printf("\n The bytes read are [%s]\n",buffer);
+   
        int offset ;
-   //  start = 0 ;
+ 
      	 offset= OFFSET + start*BLOCK_SIZE;
      	 
-     	 printf("Offset : %d\n", offset);
+     	 
         fseek(fs, offset ,SEEK_SET);
      
      	fwrite(buffer, size, 1 , fs);
@@ -191,37 +231,37 @@ char *create_file(char *f_path, char *f_name, char *data_file)
      	buffer1 = malloc(1024);
     	fread(buffer1, size , 1, fs);
     	
-    	printf("\n The bytes read are [%s]\n",buffer1);
+    	
      
-    //    node *temp;
+   
         file_desc *fd;
+        
         temp_bst = search_bst(BST_Root,f_path);
         
         if(temp_bst == NULL){
         create_tree_in_nary(VFS_Root, f_path,DIR_ATTRIBUTE);
+	makedir_bst(f_path);
         }
         temp = search_nary(VFS_Root,f_path);
         
      	fd = add_fd(temp, f_name , FILE_ATTRIBUTE, start);
      
-     printf("Start block : %d\n", fd->start_block);
-     
+    
      	insert_nodes_nary(temp , fd);
-
-	//char *name_bst1 = malloc(100);
-	//strcpy(name_bst1,f_path);
-	//strcat(name_bst1,"/");
-	//strcat(name_bst1,f_name);
+		free_list[start]=1;
+	
 	memmove(local_fpath,local_fpath+1,strlen(local_fpath)); //to remove the '/' at the beginning
+	
         insert_in_bst(BST_Root, local_fpath);
        
-printf("BST_Root is:%s\n",BST_Root->data);
-
-	free_list[start]=1;
-             
+	
+	insert_in_hashtable(hash_root,f_name,local_fpath);
+	
 	 fclose(fp);
-        printf("\n");     
-	return SUC_VFS_ADDFILE_01;	
+      
+	sprintf(outputmsg,"%s","addfile_SUCCESS");
+	return outputmsg;
+    	
 	}
 	
 }
@@ -236,27 +276,42 @@ char* list_file(char *f_path,char *hd_path){
 	char c;
 	int i;
 	char* file_type;
-	
+	if(mountstate != 1)
+	{
+		sprintf(outputmsg,"%s %s","listfile_FAILURE",ERR_VFS_LISTFILE_04);
+		return outputmsg;
+	}
 	file_type = strchr(f_path,'.');
 
 	struct bst *temp;
 	temp = search_bst(BST_Root,f_path);
-	printf("data of temp is:%s\n",temp->data);
+	
 	inorder (BST_Root);
 
 	if(*(file_type+1)!='t')
-		return ERR_VFS_LISTFILE_02 ;
+	{
+		sprintf(outputmsg,"%s %s","listfile_FAILURE",ERR_VFS_LISTFILE_02);
+		return outputmsg;
+	}
 
 	else if(strlen(hd_path) == 0)
-		return ERR_VFS_LISTFILE_00;
+	{
+		sprintf(outputmsg,"%s %s","listfile_FAILURE",ERR_VFS_LISTFILE_00);
+		return outputmsg;
+	}
 	
 	else if(strlen(f_path) == 0)
-		return ERR_VFS_LISTFILE_00;
-	
+	{
+		sprintf(outputmsg,"%s %s","listfile_FAILURE",ERR_VFS_LISTFILE_00);
+		return outputmsg;
+	}
+		
 	else if((temp->data) == NULL)
-		return  ERR_VFS_LISTFILE_01;
+	{
+		sprintf(outputmsg,"%s %s","listfile_FAILURE",ERR_VFS_LISTFILE_01);
+		return outputmsg;
+	}
 	
-
 	else{
 
 		new = search_nary(VFS_Root,f_path);  
@@ -278,7 +333,9 @@ char* list_file(char *f_path,char *hd_path){
 		
 		fclose(fp1);
 		fclose(fp2);
-		return SUC_VFS_LISTFILE_01;
+		sprintf(outputmsg,"%s","listfile_SUCCESS");
+		return outputmsg;
+
 	}
 }
 
@@ -297,6 +354,11 @@ char* update_file(char* f_path, char* hd_path){              //p1:VFS file path 
 	char c;
 	int size;
 
+if(mountstate != 1)
+	{
+		sprintf(outputmsg,"%s %s","updatefile_FAILURE",ERR_VFS_UPDATEFILE_04);
+		return outputmsg;
+	}
 	r = search_nary(VFS_Root,f_path);
 
 	fp2 = fopen(hd_path,"r");
@@ -305,16 +367,28 @@ char* update_file(char* f_path, char* hd_path){              //p1:VFS file path 
 	fclose(fp2);
 
 	if(size>=1024)
-		return ERR_VFS_UPDATEFILE_03;
-	
+	{
+		sprintf(outputmsg,"%s %s","updatefile_FAILURE",ERR_VFS_UPDATEFILE_03);
+		return outputmsg;
+	}
+
 	else if(strlen(hd_path) == 0)
-		return ERR_VFS_UPDATEFILE_00;
+	{
+		sprintf(outputmsg,"%s %s","updatefile_FAILURE",ERR_VFS_UPDATEFILE_00);
+		return outputmsg;
+	}
 	
 	else if(strlen(f_path) == 0)
-		return ERR_VFS_UPDATEFILE_00;
+	{
+		sprintf(outputmsg,"%s %s","updatefile_FAILURE",ERR_VFS_UPDATEFILE_00);
+		return outputmsg;
+	}
 
 	else if(r == NULL)
-		return ERR_VFS_UPDATEFILE_01;
+	{
+		sprintf(outputmsg,"%s %s","updatefile_FAILURE",ERR_VFS_UPDATEFILE_01);
+		return outputmsg;
+	}
 
 	else{
 
@@ -332,7 +406,9 @@ char* update_file(char* f_path, char* hd_path){              //p1:VFS file path 
 	fwrite(buffer,1024,1,fp1);            
 
 	fclose(fp1);
-	return SUC_VFS_UPDATEFILE_01;
+	sprintf(outputmsg,"%s","updatefile_SUCCESS");
+	return outputmsg;
+
 	}
 
 }
@@ -344,21 +420,53 @@ char* remove_file(char *f_path)
 
         node *temp;
 	struct bst * temp2;
-	temp2 = search_bst(BST_Root, f_path);
-	temp = search_nary(VFS_Root, f_path);
+	int i; 
+        char *token,*str1;
+        char filename[20][20];
+      
+       if(mountstate != 1)
+	{
+		sprintf(outputmsg,"%s %s","removefile_FAILURE",ERR_VFS_REMOVEFILE_02);
+		return outputmsg;
+	}
+        strcpy(str1,f_path);
+		token = strtok(str1,"/");
+
+        i= 0;
+        
+		temp2 = search_bst(BST_Root, f_path);
+		temp = search_nary(VFS_Root, f_path);
+	
+        while(token!=NULL)
+        {
+                strcpy(filename[i],token);
+                token = strtok(NULL,"/");
+                i++;
+        }
 
         if (temp2 == NULL)
-                 return ERR_VFS_REMOVEFILE_01;
-      
+	{
+		sprintf(outputmsg,"%s %s","removefile_FAILURE",ERR_VFS_REMOVEFILE_01);
+		return outputmsg;
+	}     
+ 
 	else if (temp == VFS_Root)
-                return ERR_VFS_REMOVEFILE_01;
+	{
+		sprintf(outputmsg,"%s %s","removefile_FAILURE",ERR_VFS_REMOVEFILE_01);
+		return outputmsg;
+	}     
         
 	else{
 
 		delete_node_from_nary(temp);
 		Number_of_fds_Deleted++;
 		delete_bst(BST_Root,f_path);
-		return SUC_VFS_REMOVEFILE_01;
+		
+		delete_from_hashtable(hash_root,filename[i-1],f_path);
+
+		sprintf(outputmsg,"%s","removefile_SUCCESS");
+		return outputmsg;
+
 	}
 }
 
@@ -376,20 +484,37 @@ char* export_file(char *f_path,char *hd_path){
 	char* file_type;
 	
 	struct bst *temp;
+	if(mountstate != 1)
+	{
+		sprintf(outputmsg,"%s %s","exportfile_FAILURE",ERR_VFS_EXPORTFILE_04);
+		return outputmsg;
+	}
 	temp = search_bst(BST_Root,f_path);
 	new = search_nary(VFS_Root,f_path);  
 
 	if(strlen(hd_path) == 0)
-		return ERR_VFS_LISTFILE_00;
+	{
+		sprintf(outputmsg,"%s %s","exportfile_FAILURE",ERR_VFS_EXPORTFILE_00);
+		return outputmsg;
+	}     
 	
 	else if(strlen(f_path) == 0)
-		return ERR_VFS_LISTFILE_00;
+	{
+		sprintf(outputmsg,"%s %s","exportfile_FAILURE",ERR_VFS_EXPORTFILE_00);
+		return outputmsg;
+	}     
 	
 	else if((temp->data) == NULL)
-		return  ERR_VFS_LISTFILE_01;
+	{
+		sprintf(outputmsg,"%s %s","exportfile_FAILURE",ERR_VFS_EXPORTFILE_01);
+		return outputmsg;
+	}     
 	
 	else if((new->fd->attrib) == DIR_ATTRIBUTE) 
-		return ERR_VFS_EXPORTFILE_03;
+	{
+		sprintf(outputmsg,"%s %s","exportfile_FAILURE",ERR_VFS_EXPORTFILE_03);
+		return outputmsg;
+	}     
 	
 	else{
 
@@ -411,7 +536,9 @@ char* export_file(char *f_path,char *hd_path){
 		
 		fclose(fp1);
 		fclose(fp2);
-		return SUC_VFS_LISTFILE_01;
+		sprintf(outputmsg,"%s","exportfile_SUCCESS");
+		return outputmsg;
+
 	}
 }
 
@@ -428,23 +555,36 @@ char * move_file(char *src_path, char *dest_path)
 	struct bst * temp2;
 	
 	if(mountstate != 1)
-		return ERR_VFS_MOVEFILE_06;
+	{
+		sprintf(outputmsg,"%s %s","movefile_FAILURE",ERR_VFS_MOVEFILE_06);
+		return outputmsg;
+	}     
+	
 	if(strlen(src_path) == 0 || strlen(dest_path) == 0)
-		return ERR_VFS_MOVEFILE_00;
+	{
+		sprintf(outputmsg,"%s %s","movefile_FAILURE",ERR_VFS_MOVEFILE_00);
+		return outputmsg;
+	}     
+
 	temp1 = search_bst(BST_Root,src_path);
 	
 	if(temp1 == NULL)
-		return ERR_VFS_MOVEFILE_01;
+	{
+		sprintf(outputmsg,"%s %s","movefile_FAILURE",ERR_VFS_MOVEFILE_01);
+		return outputmsg;
+	}     
+
 	temp2 = search_bst(BST_Root,dest_path);	
 	if(temp2 == NULL)
-		return ERR_VFS_MOVEFILE_02;	
+	{
+		sprintf(outputmsg,"%s %s","movefile_FAILURE",ERR_VFS_MOVEFILE_02);
+		return outputmsg;
+	}     
 	
-	
-	printf("Src path : %s\n",src_path);	
-	src = search_nary(VFS_Root,src_path);
-	printf("SRC NODE : %s\n" , src->data);
-	/* IF src is null return error */
 		
+	src = search_nary(VFS_Root,src_path);
+	
+	
 	dest = search_nary(VFS_Root,dest_path);
 	
 	/* search nary for that node */
@@ -453,24 +593,21 @@ char * move_file(char *src_path, char *dest_path)
 	src_start = src->fd->start_block;
 	
 	
-	printf("Source start block is : %d\n", src_start);
+	
 	
 	dest_start = dest->fd->start_block;
 	
-	printf("Dest start block is : %d\n", dest_start);
+	
 	
 	src_offset = OFFSET + (src_start * BLOCK_SIZE);
 	
-	printf("Source offset is : %d\n", src_offset);
 	
 	dest_offset = OFFSET + (dest_start * BLOCK_SIZE);
-	printf("dest offset is : %d\n", dest_offset);
 	
 	fseek(fs, src_offset , SEEK_SET);
 	
 	fread(buffer, BLOCK_SIZE, 1 ,fs);
 	
-	printf("\n The bytes read are [%s]\n",buffer);
 	
 	fseek(fs, dest_offset, SEEK_SET);
 	
@@ -480,14 +617,55 @@ char * move_file(char *src_path, char *dest_path)
 	
 	fread(buffer, BLOCK_SIZE, 1 ,fs);
 	
-	printf("\n The bytes read are [%s]\n",buffer);
+	
 	
 	/* Update the FDs */
 	
+	
+	delete_from_hashtable(hash_root, src->data,src_path);
+	insert_in_hashtable(hash_root, src->data,dest_path);
+
 	dest->fd->size = src->fd->size;
 	delete_node_from_nary(src);
-	printf("Deleted!\n");
+	delete_bst(BST_Root,src_path);
+	
 	print_subtree_nary_test(VFS_Root);
 	Number_of_fds_Deleted++;
-	return SUC_VFS_MOVEFILE_01;
+
+	
+	sprintf(outputmsg,"%s","movefilefile_SUCCESS");
+	return outputmsg;
+
 }
+
+
+char *search_file(struct hash_table *hash_root,char *filename,char *filepath)
+{
+int i,j;
+i=strlen(filename);
+j=strlen(filepath);
+if(mountstate != 1)
+	{
+		sprintf(outputmsg,"%s %s","searchfile_FAILURE",ERR_VFS_SEARCHFILE_02);
+		return outputmsg;
+	}   
+if(i==0)
+{
+	sprintf(outputmsg,"%s %s","searchfile_FAILURE",ERR_VFS_SEARCHFILE_00);
+	return outputmsg;
+}
+
+else if(j==0)
+{
+	sprintf(outputmsg,"%s %s","searchfile_FAILURE",ERR_VFS_SEARCHFILE_00);
+	return outputmsg;
+}
+else
+{
+search_from_hashtable(hash_root,filename,filepath);//this function directly generates an output file
+}
+	sprintf(outputmsg,"%s","searchfile_SUCCESS");
+	return outputmsg;
+
+}
+
