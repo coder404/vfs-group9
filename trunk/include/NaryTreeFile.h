@@ -19,6 +19,7 @@ int fd_no;
 #define DIR_ATTRIBUTE 1
 #define INVALID_CHARACTER "/"
 #define PRINT_VFS() printf("VFS ROOT DATA %s %p\n",VFS_Root->data, &(VFS_Root->data))
+node * load_vfs_structure();
 file_desc * add_fd(node *parent, char *dir_name , int fd_att, int start);
 //node* insert_in_nary(node *head, char* x);
 //node* insert_in_nary(node *head, char *path,int fd);
@@ -30,7 +31,7 @@ node * insert_child_in_nary(node *head, char *path,file_desc *fd );
 void delete_node_from_nary(node *p);
 //int create_tree_in_nary(node* head, file_desc fd);
 //int create_tree_in_nary(node* head, char *path);
-node * create_tree_in_nary(node *head, char *path, char *name, file_desc *fd);
+node * create_tree_in_nary(node *head, char *path,int fd_attr);
 //node * insert_nodes_nary(node *head, char *path, char *name, int fd);
 //node * insert_nodes_nary(node *head, char *path, char *name,file_desc *fd);
 node * insert_nodes_nary(node *p , file_desc *fd);

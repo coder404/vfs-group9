@@ -1,57 +1,39 @@
-// prototype for linked list each node
+#ifndef HASHTABLEFILE_H
+#define HASHTABLEFILE_H
 
-#define MAXBUCKETS 26
-#define SUCCESS 1
-#define RECORD_NOT_INSERTED 3
-#define RECORD_NOT_DELETED 4
-#define UNABLE_TO_OPEN_FILE 10
-#define EMPTY_FILE 5
-struct LinkedListNode
+
+struct ll_node
 {
-        char *key;
-       
-       
-        struct LinkedListNode *next;
-        
-        
+        char *data;
+        char *path;
+        struct ll_node *link;
 };
 
 
-/* This function inserts in sorted order */
-int insertIntoLinkedList(struct LinkedListNode **head, char *fileName);
 
-
-/* This function deletes a node from the Linked List */
-int deleteFromLinkedList(struct LinkedListNode **head, char *fileName);
-
-/* This function searches for a given node in the Linked List */
-int searchLinkedList(struct LinkedListNode **head, char *fileName);
-
-
-
-struct HashTable
+struct hash_table
 {
-        struct LinkedListNode *buckets[MAXBUCKETS] ;
+        struct ll_node *buckets[26] ;
 };
 
-/* This function loads the hash-table from the file on to the main memory. */
-//void loadHashTable();
 
-/* This function allocates memory and initializes the hash-table.*/
-void createHashTable(struct HashTable *hash);
 
-/* This function inserts a given key in a hash-table. */
-int hashInsert(struct HashTable *hash, char *fileName);
+struct hash_table * hashtable_create(struct hash_table *table);
 
-/* This function deletes a given key in a hash-table. */
-int hashDelete(struct HashTable *hash, char *fileName);
 
-/* This function calculates the key to a corresponding value in a hash-table. */
-int calcHash(char *fileName);
+int insert_in_hashtable(struct hash_table *table, char *fileName,char *fpath);
 
-/* This funtion searches the hash-table */
-void hashSearch(struct HashTable *hash, char *fileName);
+
+int delete_from_hashtable(struct hash_table *table, char *fileName,char *fpath);
+
+
+int calculate_mapping(char *fileName);
+
+
+int search_from_hashtable(struct hash_table *table, char *fileName,char * filepath);
 
 
 
-struct HashTable *Hash_Root;
+struct hash_table *hash_root;
+char * search_file(struct hash_table * hash_root ,char *filename, char *filepath);
+#endif
