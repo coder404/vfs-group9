@@ -1,5 +1,5 @@
-../bin/vfsdriver : ../bin/test.o ../bin/vfs_funcs.o ../bin/nary_tree.o ../bin/bst_tree.o ../bin/vfs_dir_opns.o ../bin/hash_table.o ../bin/vfs_file_opns.o ../bin/vfs_fd_opns.o
-	gcc ../bin/test.o ../bin/vfs_funcs.o ../bin/nary_tree.o ../bin/bst_tree.o ../bin/vfs_dir_opns.o ../bin/hash_table.o ../bin/vfs_file_opns.o ../bin/vfs_fd_opns.o -o ../bin/vfsdriver -lm
+../bin/vfs_group09 : ../bin/test.o ../bin/vfs_funcs.o ../bin/nary_tree.o ../bin/bst_tree.o ../bin/vfs_dir_opns.o ../bin/hash_table.o ../bin/vfs_file_opns.o ../bin/vfs_fd_opns.o
+	gcc -g ../bin/test.o ../bin/vfs_funcs.o ../bin/nary_tree.o ../bin/bst_tree.o ../bin/vfs_dir_opns.o ../bin/hash_table.o ../bin/vfs_file_opns.o ../bin/vfs_fd_opns.o -o ../bin/vfs_group09 -lm
 	
 ../bin/test.o : ../test/vfsdriver.c ../src/Nary_Tree_Creation.c ../src/Binary_Tree_Creation.c 
 	gcc -c ../test/vfsdriver.c -o ../bin/test.o
