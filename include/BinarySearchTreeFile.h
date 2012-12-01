@@ -1,6 +1,7 @@
 #ifndef BINARYSEARCHTREEFILE_H
 #define BINARYSEARCHTREEFILE_H
 
+#include "NaryTreeFile.h"
 struct bst{
 	char data[100]; //stores the absolute path of the file/folder
 	//file_desc fd;
@@ -17,6 +18,7 @@ struct bst* insert_in_bst(struct bst *r, char b[1000]);
 void transplant_bst(struct bst *r, struct bst *u, struct bst *v);
 struct bst *tree_min_bst(struct bst *z);
 void delete_bst(struct bst *r, char a[1000]);
-
+void makedir_bst(char *loc_bst);
+void reinsert_bst(node * head);
 
 #endif

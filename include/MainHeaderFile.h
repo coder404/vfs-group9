@@ -1,5 +1,7 @@
 #ifndef MAINHEADERFILE_H
 #define MAINHEADERFILE_H
+
+
 int mountstate;
 char outputmsg[200];
  struct Block {
@@ -44,15 +46,15 @@ int Number_of_fds_Created;
 
 char * mount(char fs_name[20]);
 char *create_vfs(char fs_name[20], int size);
-void load_vfs_structure();
-void load_bst_structure();
-void loadHashTable();
+
+struct bst * load_bst_structure();
+struct hash_table * loadHashTable();
 
 int check_free_list(int num_blocks);
 char* unmount();
 
 char * create_file(char* f_path, char f_name[], char data[]);
-void delete_file(char* f_path);
+//void delete_file(char* f_path);
 void update_fd(char f_name[],char *f_path,int size,int start,int type);
 
 void set_fd_values_null(file_desc fd);
@@ -61,4 +63,13 @@ char * make_dir(char *parent_path, char *dir_name);
 
 
 char * copy_file(char *src_path, char *dest_path);
+char* list_file(char *f_path,char *hd_path);
+char* update_file(char* f_path, char* hd_path);
+char* remove_file(char *f_path);
+char* export_file(char *f_path,char *hd_path);
+char * move_file(char *src_path, char *dest_path);
+//char * search_file(struct hash_table * hash_root ,char *filename, char *filepath);
+char * list_dir(char *dir_name,int flag , char *outputfile);
+char * delete_dir(char *dir_path);
+char * move_dir(char * src_dir_path , char * dest_dir_path);
 #endif
