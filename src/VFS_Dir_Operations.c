@@ -26,7 +26,7 @@ char * make_dir(char *parent_path, char *dir_name)
 		return outputmsg;
 	}
 	
-//	printf("MK DIR : %s  %s \n",parent_path,dir_name);
+
 	if(parent_path[0] == '\0' || dir_name[0] == '\0')
 	{
 		sprintf(outputmsg,"%s %s","makedir_FAILURE",ERR_VFS_MAKEDIR_00);
@@ -54,6 +54,7 @@ char * make_dir(char *parent_path, char *dir_name)
 		strcat(parent_path,dir_name);	
 		strcat(parent_path,"/");
 	}
+
 	
 	temp_bst = search_bst(BST_Root,parent_path);
 	
@@ -69,26 +70,25 @@ char * make_dir(char *parent_path, char *dir_name)
 		return outputmsg;
 	}
 	
-	/* Create the new directory in the Nary tree */
+	
 	create_tree_in_nary(VFS_Root, parent_path,DIR_ATTRIBUTE);
 	
-	//printf("Inserted\n");
 	
-	/* Inserting the directory path in BST */
 	char *loc_bst; 
 	loc_bst = malloc(100);
       	
      	strcpy(loc_bst , parent_path);
-	memmove(loc_bst,loc_bst+1,strlen(loc_bst)); //to remove the '/' at the beginning
+
 	
-	BST_Root = insert_in_bst(BST_Root, loc_bst);
 	
-	/* Testing whether the insert has happened successfully in the Nary tree */
+	makedir_bst(loc_bst);
+	
+	
 	temp_nary = search_nary(VFS_Root,parent_path);
-	//printf("Search done!!\n");
+	
 	if(strcmp(temp_nary->data,dir_name)==0)
 	{
-		//printf("TEMP AFTER PATH IS %s\n",temp_nary->data);
+		
 		sprintf(outputmsg,"%s","makedir_SUCCESS");
 		return outputmsg;
 	
@@ -131,15 +131,13 @@ char * list_dir(char *dir_name,int flag , char *outputfile)
 		sprintf(outputmsg,"%s %s","listdir_FAILURE",ERR_VFS_LISTDIR_04);
 		return outputmsg;
 	}
-	//printf("Searching in BST...\n");
+	
 	if(dir_name[strlen(dir_name) - 1] != '/')
 	{
 		strcat(dir_name,"/");
 	}
 
-	//r = (struct bst *)malloc(10*sizeof(struct bst));
 	
-	//printf("BST ROOT : %s\n",BST_Root->data);
 	
 	r = search_bst(BST_Root, dir_name);
 	
@@ -148,17 +146,12 @@ char * list_dir(char *dir_name,int flag , char *outputfile)
 		sprintf(outputmsg,"%s %s","listdir_FAILURE",ERR_VFS_LISTDIR_01);
 		return outputmsg;
 	}
-  /*      if (strcmp(temp->data , VFS_Root->data )==0)
-        {
-          //      printf("No such file or directory\n");
-                return ERR_VFS_LISTDIR_01;
-        }
-        */
+  
         
 	temp_dir = malloc(100);
 	strcpy(temp_dir, "Listing of directories of : ");
 	
-	//printf("temp_dir : %s \n", temp_dir);
+	
 	strcat(temp_dir,dir_name);
 	
 	temp = search_nary(VFS_Root,dir_name);
@@ -167,7 +160,7 @@ char * list_dir(char *dir_name,int flag , char *outputfile)
 	fputs("\n****************************\n",fp_dir);
         if (flag == 0)
         	print_arr(temp,fp_dir);
-        //print_dir_tree(temp,0);
+       
         
         if(flag == 1)
         	print_subtree_nary(temp,fp_dir);
@@ -184,10 +177,7 @@ char * list_dir(char *dir_name,int flag , char *outputfile)
 char * delete_dir(char *dir_path)
 {
 
-// check for validity of dir name - return ERR_VFS_DELETEDIR_03 
 
-
- // search for the path - if not found return ERR_VFS_DELETEDIR_01
  	node * temp;
  	struct bst *r ;
  	if(mountstate != 1)
@@ -217,7 +207,7 @@ char * delete_dir(char *dir_path)
 	
 	temp = search_nary(VFS_Root,dir_path);
 
- 	//check if dir has a child - If yes return ERR_VFS_DELETEDIR_02
+ 	
  	if(temp->child != NULL)
  	{
  		sprintf(outputmsg,"%s %s","deletedir_FAILURE",ERR_VFS_DELETEDIR_02);
@@ -272,7 +262,6 @@ char * move_dir(char * src_dir_path , char * dest_dir_path)
 		return outputmsg;
 	}
 
-	///printf("BST ROOT : %s\n",BST_Root->data );
 	temp=search_bst(BST_Root,dest_dir_path);
 	
 	if(temp == NULL)
@@ -283,7 +272,7 @@ char * move_dir(char * src_dir_path , char * dest_dir_path)
 	
 	
 	temp_b=search_bst(BST_Root,src_dir_path);
-	//CHECK!!!!! AND UNCOMMENT!
+	
 	
 	if(temp_b == NULL)
 	{
@@ -293,7 +282,7 @@ char * move_dir(char * src_dir_path , char * dest_dir_path)
 	
 		
 	temp1 = search_nary(VFS_Root,src_dir_path);
-//	printf("SRC : %s\n",temp1->data);
+
 
 	
 	if(temp1->fd->attrib == FILE_ATTRIBUTE)
@@ -303,7 +292,7 @@ char * move_dir(char * src_dir_path , char * dest_dir_path)
 	}
 
 	temp2 = search_nary(VFS_Root,dest_dir_path);
-	//printf("DEST : %s\n",temp2->data);
+
 	
 	if(temp2->fd->attrib == FILE_ATTRIBUTE)
 	{
@@ -320,16 +309,23 @@ char * move_dir(char * src_dir_path , char * dest_dir_path)
 	strcpy(str, temp2->fd->location);
 	strcat(str, temp1->data);
 	strcat(str,"/");
-	//inorder(BST_Root);
+	
 	node * temp11;
 	temp11 = search_nary(VFS_Root,str);
-	printf("temp11-> data %s\n",temp11->data);
+	
 	if(strcmp(temp11->data,temp1->data)==0)
 	{
 		sprintf(outputmsg,"%s %s","movedir_FAILURE",ERR_VFS_MOVEDIR_05);
 		return outputmsg;
 	}
 	move_nodes_dir(temp1,temp2);
+	
+
+	BST_Root = NULL;
+
+	reinsert_bst(VFS_Root);
+	
+	inorder ( BST_Root );
 	
 	sprintf(outputmsg,"%s","movedir_SUCCESS");
 	return outputmsg;
