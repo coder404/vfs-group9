@@ -18,12 +18,10 @@
 #include<string.h>
 #include"../include/MainHeaderFile.h"
 #include"../include/NaryTreeFile.h"
-
+#include"../include/HashTableFile.h"
 #define BUFSIZE 200
 #define CMDSIZE 30
 #define PARSIZE 100
-FILE *fp;
-
 
 void createvfs ( char *P1, int P2 );
 void mountvfs ( char *P1 );
@@ -46,6 +44,7 @@ void processcommand( char *command, char *P1, char *P2, char *P3 );
 int main( int argc, char *argv[] )
 {
 	FILE *scriptfp;
+	FILE *outputfp;
 	char linebuffer[BUFSIZE];
 	char command[CMDSIZE], par1[PARSIZE], par2[PARSIZE], par3[PARSIZE];
 	char *token;
@@ -131,158 +130,82 @@ void processcommand( char *command, char *P1, char *P2, char *P3 )
 
 void createvfs ( char *P1, int P2 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	
-	//printf("createvfs_TO_BE_DONE\n");
-	
 	printf("%s\n",create_vfs(P1, P2));
 }
 
 void mountvfs ( char *P1 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-//	printf("mountvfs_TO_BE_DONE\n");
 	printf("%s\n",mount(P1));
-	
+
 }
 
 void unmountvfs ( char *P1 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	//printf("unmountvfs_TO_BE_DONE\n");
-	
-	int status = 0;
-	status = unmount(P1);
-	if(status)
-		printf("unmountvfs_SUCCESS\n");
-	else
-		printf("unmountvfs_FAILURE Unmounting of VFS Failed\n");
-	return;
+	printf("%s\n",unmount(P1));
 }
 
 void makedir ( char *P1, char *P2 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-printf("calling mkdir .. n");
-	char *status;
-	//status = malloc(50*sizeof(char));
-	
-	//printf("P2 :%s\n",P2);
-	status = make_dir(P1,P2);
-	//fopen("demo_interaction_output.txt","a");
-	printf("STATUS : %s\n", status);
-	//while(strlen(status) > 0 )
-	//fputs(status,fp);
-	
-//	free(status);
-	return;
-	
+	printf("%s\n",make_dir(P1,P2));
 }
 
 void deletedir ( char *P1 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	//printf("deletedir_TO_BE_DONE\n");
-	char *status1;
-	//status1 = malloc(50*sizeof(char));
-	
-
-	status1 = delete_dir(P1);
-	
-	printf("STATUS : %s\n", status1);
-	//return;
+	printf("%s\n",delete_dir(P1));
 }
 
 void movedir ( char *P1, char *P2 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	//printf("movedir_TO_BE_DONE\n");
-	char * status;
-	status = malloc(50*sizeof(char));
-	status = move_dir(P1,P2);
-	printf("STATUS : %s\n", status);
-	
+	printf("%s\n",move_dir(P1,P2));
 }
 
 void listdir ( char *P1, int P2, char *P3 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	//printf("listdir_TO_BE_DONE\n");
-	printf("%s  %d  %s\n" , P1 , P2 , P3);
-	char *status;
-	status = malloc(50*sizeof(char));
-	
-	status = list_dir(P1,P2,P3);
-	printf("STATUS : %s\n",status);
-	
-	//free(status);
-	//return;
-
-	
+	printf("%s\n",list_dir(P1,P2,P3));	
 }
 
 void addfile ( char *P1, char *P2, char *P3 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	//printf("addfile_TO_BE_DONE\n");
 	
 	
-	char *status;
+	printf("%s\n",create_file(P1,P2,P3));	
 	
-	status = create_file(P1, P2, P3);
-	
-	printf("%s\n",status);
 }
 
 void listfile ( char *P1, char *P2 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("listfile_TO_BE_DONE\n");
+	
+	printf("%s\n",list_file(P1,P2));	
 }
 
 void updatefile ( char *P1, char *P2 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("updatefile_TO_BE_DONE\n");
+	
+printf("%s\n",update_file(P1,P2));	
 }
 
 void removefile ( char *P1 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("removefile_TO_BE_DONE\n");
-}
+printf("%s\n",remove_file(P1));	}
 
 void movefile ( char *P1, char *P2 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("movefile_TO_BE_DONE\n");
+printf("%s\n",move_file(P1,P2));	
 }
 
 void copyfile ( char *P1, char *P2 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-//	printf("copyfile_TO_BE_DONE\n");
-
-	char * status;
-	//status = malloc(50*sizeof(char));
-	status = copy_file(P1,P2);
-	printf("STATUS : %s\n", status);
-	
-
-
-
+printf("%s\n",copy_file(P1,P2));	
 }
 
 void exportfile ( char *P1, char *P2 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("exportfile_TO_BE_DONE\n");
+printf("%s\n",export_file(P1,P2));	
 }
 
 void searchfile ( char *P1, char *P2 )
 {
-	/* Call the appropriate function with given arguments and display appropriate output on the screen */
-	printf("searchfile_TO_BE_DONE\n");
+printf("%s\n",search_file(hash_root,P1,P2));
 }
 
 
